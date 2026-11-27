@@ -1,3 +1,21 @@
+/* ============================================================
+   USTAWIENIA KALENDARZA — JEDYNE MIEJSCE, KTÓRE EDYTUJESZ W KODZIE
+   ============================================================ */
+const CALENDAR_CONFIG = {
+  // Wklej tutaj link CSV z Google Sheets (Plik -> Udostępnij -> Opublikuj w internecie -> CSV):
+  sheetCsvUrl: "WKLEJ_TUTAJ_LINK_CSV_Z_GOOGLE_SHEETS",
+
+  year: 2026,
+  month: 12, // 12 = grudzień
+  title: "Nasz Kalendarz Adwentowy",
+  subtitle: "24 małe niespodzianki — po jednej każdego dnia grudnia",
+  previewKey: "mikolaj", // tryb podglądu: dodaj ?preview=mikolaj na końcu adresu
+  shuffleDays: false     // true = pomieszane okienka jak w papierowym kalendarzu
+};
+
+/* ============================================================
+   LOGIKA KALENDARZA (poniżej nie trzeba nic zmieniać)
+   ============================================================ */
 (function () {
   const LOCKED_MESSAGES = [
     "Nie podglądaj! To okienko jeszcze śpi ❄️",
@@ -18,6 +36,89 @@
     }, 2800);
   }
 
+  // Bezpieczny parser CSV (obsługuje przecinki, cudzysłowy i entery w komórkach)
+  function parseCSV(csvText) {
+    const text = csvText.replace(/^﻿/, ""); // usuwa BOM
+    const rows = [];
+    let row = [];
+    let field = "";
+    let inQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+      const next = text[i + 1];
+
+      if (inQuotes) {
+        if (char === '"' && next === '"') {
+          field += '"';
+          i++;
+        } else if (char === '"') {
+          inQuotes = false;
+        } else {
+          field += char;
+        }
+      } else {
+        if (char === '"') {
+          inQuotes = true;
+        } else if (char === ",") {
+          row.push(field);
+          field = "";
+        } else if (char === "" && next === "
+") {
+          row.push(field);
+          rows.push(row);
+          row = [];
+          field = "";
+          i++;
+        } else if (char === "
+" || char === "") {
+          row.push(field);
+          rows.push(row);
+          row = [];
+          field = "";
+        } else {
+          field += char;
+        }
+      }
+    }
+
+    if (field.length > 0 || row.length > 0) {
+      row.push(field);
+      rows.push(row);
+    }
+
+    if (rows.length < 2) return [];
+
+    const headers = rows[0].map((h) => h.trim().toLowerCase());
+    const idx = {
+      day: headers.indexOf("day"),
+      title: headers.indexOf("title"),
+      text: headers.indexOf("text"),
+      image: headers.indexOf("image"),
+      coupon: headers.indexOf("coupon"),
+      mediaEmbed: headers.indexOf("mediaembed")
+    };
+
+    const items = [];
+    for (let r = 1; r < rows.length; r++) {
+      const cols = rows[r];
+      const rawDay = idx.day >= 0 ? (cols[idx.day] || "").trim() : "";
+      const dayNum = parseInt(rawDay, 10);
+      if (isNaN(dayNum)) continue;
+
+      items.push({
+        day: dayNum,
+        title: idx.title >= 0 ? (cols[idx.title] || "").trim() : `Dzień ${dayNum}`,
+        text: idx.text >= 0 ? (cols[idx.text] || "").trim() : "",
+        image: idx.image >= 0 ? (cols[idx.image] || "").trim() : "",
+        coupon: idx.coupon >= 0 ? (cols[idx.coupon] || "").trim() : "",
+        mediaEmbed: idx.mediaEmbed >= 0 ? (cols[idx.mediaEmbed] || "").trim() : ""
+      });
+    }
+
+    return items.sort((a, b) => a.day - b.day);
+  }
+
   function getOpenedDays(storageKey) {
     try {
       const raw = localStorage.getItem(storageKey);
@@ -31,11 +132,10 @@
     try {
       localStorage.setItem(storageKey, JSON.stringify([...set]));
     } catch {
-      // Ignoruj błąd w trybie prywatnym przeglądarki
+      // Ignoruj w trybie prywatnym
     }
   }
 
-  // Deterministyczne mieszanie (zawsze taki sam układ dla danego roku)
   function deterministicShuffle(array, seed) {
     const copy = [...array];
     let s = seed;
@@ -62,8 +162,7 @@
     title.textContent = item.title || `Dzień ${item.day}`;
     text.textContent = item.text || "";
 
-    // Zdjęcie
-    if (item.image && item.image.trim() !== "") {
+    if (item.image) {
       img.src = item.image;
       img.alt = item.title || `Zdjęcie z dnia ${item.day}`;
       img.onerror = () => imgWrap.classList.add("hidden");
@@ -73,24 +172,21 @@
       imgWrap.classList.add("hidden");
     }
 
-    // Kupon
-    if (item.coupon && item.coupon.trim() !== "") {
+    if (item.coupon) {
       couponText.textContent = item.coupon;
       couponBox.classList.remove("hidden");
     } else {
       couponBox.classList.add("hidden");
     }
 
-    // Spotify / YouTube
     mediaBox.innerHTML = "";
     mediaBox.classList.remove("is-video", "is-spotify");
-    if (item.mediaEmbed && item.mediaEmbed.trim() !== "") {
-      const url = item.mediaEmbed.trim();
+    if (item.mediaEmbed) {
       const iframe = document.createElement("iframe");
-      iframe.src = url;
+      iframe.src = item.mediaEmbed;
       iframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
       iframe.loading = "lazy";
-      if (url.includes("spotify.com")) {
+      if (item.mediaEmbed.includes("spotify.com")) {
         mediaBox.classList.add("is-spotify");
       } else {
         mediaBox.classList.add("is-video");
@@ -107,8 +203,7 @@
 
   function closeModal() {
     const modal = document.getElementById("day-modal");
-    const mediaBox = document.getElementById("modal-media");
-    mediaBox.innerHTML = ""; // Zatrzymuje odtwarzanie muzyki/wideo po zamknięciu
+    document.getElementById("modal-media").innerHTML = "";
     modal.classList.add("hidden");
     document.body.style.overflow = "";
   }
@@ -161,21 +256,8 @@
     draw();
   }
 
-  window.initAdventCalendar = function () {
-    const config = window.CALENDAR_CONFIG || {
-      year: 2026,
-      month: 12,
-      title: "Kalendarz Adwentowy",
-      subtitle: "",
-      previewKey: "mikolaj",
-      shuffleDays: false
-    };
-    const daysData = window.CALENDAR_DAYS || [];
-
-    document.getElementById("calendar-title").textContent = config.title;
-    document.getElementById("calendar-subtitle").textContent = config.subtitle;
-    document.title = config.title;
-
+  function renderCalendar(daysData) {
+    const config = CALENDAR_CONFIG;
     const params = new URLSearchParams(window.location.search);
     const isPreview = Boolean(config.previewKey && params.get("preview") === config.previewKey);
     if (isPreview) {
@@ -257,7 +339,7 @@
       btn.addEventListener("click", () => {
         if (!unlocked) {
           btn.classList.remove("shake");
-          void btn.offsetWidth; // restart animacji
+          void btn.offsetWidth;
           btn.classList.add("shake");
 
           const targetDate = new Date(config.year, config.month - 1, item.day);
@@ -284,8 +366,13 @@
     });
 
     updateStatusPill();
+  }
 
-    // Obsługa zamykania modala
+  async function init() {
+    document.getElementById("calendar-title").textContent = CALENDAR_CONFIG.title;
+    document.getElementById("calendar-subtitle").textContent = CALENDAR_CONFIG.subtitle;
+    document.title = CALENDAR_CONFIG.title;
+
     document.getElementById("modal-close").addEventListener("click", closeModal);
     document.getElementById("day-modal").addEventListener("click", (e) => {
       if (e.target.id === "day-modal") closeModal();
@@ -295,5 +382,41 @@
     });
 
     initSnow();
-  };
+
+    const grid = document.getElementById("calendar-grid");
+    const statusPill = document.getElementById("status-pill");
+    const url = (CALENDAR_CONFIG.sheetCsvUrl || "").trim();
+
+    if (!url || url.includes("WKLEJ_TUTAJ")) {
+      statusPill.textContent = "Wymagana konfiguracja";
+      grid.innerHTML =
+        '<div class="error-message">Otwórz plik <strong>app.js</strong> i wklej swój link CSV z Google Sheets w polu <code>sheetCsvUrl</code> (szczegóły w INSTRUKCJA.txt).</div>';
+      return;
+    }
+
+    try {
+      const separator = url.includes("?") ? "&" : "?";
+      const response = await fetch(`${url}${separator}t=${Date.now()}`, {
+        cache: "no-store"
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const csvText = await response.text();
+      const daysData = parseCSV(csvText);
+
+      if (daysData.length === 0) {
+        throw new Error("Brak wierszy z numerem dnia w arkuszu.");
+      }
+
+      renderCalendar(daysData);
+    } catch (err) {
+      console.error("Błąd ładowania arkusza:", err);
+      statusPill.textContent = "Błąd ładowania";
+      grid.innerHTML =
+        '<div class="error-message">Nie udało się pobrać danych z Google Sheets. Upewnij się, że arkusz jest opublikowany jako <strong>CSV</strong> i link w <code>app.js</code> jest poprawny.</div>';
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
 })();

@@ -1,32 +1,40 @@
-INSTRUKCJA URUCHOMIENIA I EDYCJI KALENDARZA ADWENTOWEGO
-=======================================================
+INSTRUKCJA — KALENDARZ ADWENTOWY Z GOOGLE SHEETS
+================================================
 
-1. TESTOWANIE NA KOMPUTERZE
-   - Rozpakuj archiwum ZIP.
-   - Kliknij dwukrotnie plik index.html — otworzy się w przeglądarce.
-   - Aby podejrzeć wszystkie 24 dni przed grudniem, dopisz w pasku adresu
-     przeglądarki na samym końcu: ?preview=mikolaj
-     (np. .../index.html?preview=mikolaj).
+KROK 1: PRZYGOTUJ ARKUSZ GOOGLE SHEETS
+1. Wejdź na sheets.google.com i utwórz nowy pusty arkusz.
+2. Kliknij: Plik -> Importuj -> Prześlij -> wybierz plik "szablon-arkusza.csv"
+   z tej paczki (wybierz opcję "Zastąp bieżący arkusz").
+3. Masz już gotowe nagłówki i 24 dni. Nie zmieniaj nazw kolumn w 1. wierszu:
+   day | title | text | image | coupon | mediaEmbed
+4. Wpisuj swoje treści w tabeli (możesz robić nowe linie w komórce przez Alt+Enter).
 
-2. DODAWANIE TREŚCI I ZDJĘĆ
-   - Otwórz plik dane.js w dowolnym edytorze (Notatnik, VS Code).
-   - Uzupełnij tytuły, teksty oraz opcjonalne kupony (coupon) lub linki
-     do osadzenia ze Spotify/YouTube (mediaEmbed).
-   - Zdjęcia wrzuć do folderu "zdjecia/" (najlepiej zmniejszone do ok. 1200 px
-     szerokości w formacie .jpg lub .webp, żeby szybko ładowały się na telefonie)
-     i wpisz ścieżkę w dane.js, np.: image: "zdjecia/01.jpg".
+KROK 2: OPUBLIKUJ ARKUSZ JAKO CSV (ROBISZ TO TYLKO RAZ)
+1. W Google Sheets kliknij: Plik -> Udostępnij -> Opublikuj w internecie.
+2. W pierwszym polu wybierz swój arkusz (np. "Arkusz1" lub "szablon-arkusza").
+3. W drugim polu zmień "Strona internetowa" na:
+   "Wartości rozdzielone przecinkami (.csv)".
+4. Kliknij zielony przycisk "Opublikuj" i skopiuj wygenerowany link.
 
-3. WRZUCENIE NA GITHUB PAGES (DARMOWY HOSTING)
-   - Załóż nowe publiczne repozytorium na GitHubie (np. "kalendarz").
-   - Wgraj do niego wszystkie rozpakowane pliki wraz z folderem "zdjecia".
-   - Wejdź w: Settings -> Pages -> sekcja "Build and deployment".
-   - W "Branch" wybierz "main" i folder "/ (root)", kliknij Save.
-   - Po 1-2 minutach u góry pojawi się gotowy link do strony.
+KROK 3: PODEPNIJ LINK W PLIKU app.js
+1. Otwórz plik "app.js" (w Notatniku lub bezpośrednio na GitHubie).
+2. Na samej górze w linii "sheetCsvUrl" zamień tekst WKLEJ_TUTAJ_LINK_CSV_Z_GOOGLE_SHEETS
+   na swój skopiowany link (zostaw cudzysłowy!).
+3. Zapisz plik.
 
-4. EDYCJA NA ŻYWO (GDY COŚ PÓJDZIE NIE TAK)
-   - Wejdź w plik dane.js bezpośrednio na GitHubie (komputer lub aplikacja
-     GitHub Mobile), kliknij ikonę ołówka (Edit), popraw tekst i kliknij
-     "Commit changes".
-   - Po 1-2 minutach strona zaktualizuje się automatycznie. Dzięki mechanizmowi
-     odświeżania w index.html przeglądarka pobierze najnowszą wersję dane.js
-     bez konieczności czyszczenia pamięci podręcznej.
+KROK 4: WRZUĆ PLIKI NA GITHUBA (BEZ ŻADNYCH PODFOLDERÓW)
+1. Wrzuć do głównego katalogu repozytorium:
+   - index.html
+   - style.css
+   - app.js
+   - robots.txt
+   (Pliku szablon-arkusza.csv i INSTRUKCJA.txt NIE musisz wrzucać na GitHuba.)
+2. Zdjęcia wrzucaj bezpośrednio obok index.html (np. 01.jpg, 02.jpg),
+   a w Google Sheets w kolumnie "image" wpisuj samą nazwę pliku, np.: 01.jpg
+
+KROK 5: EDYCJA NA ŻYWO I PODGLĄD
+- Gdy chcesz poprawić tekst albo dopisać kolejny dzień: otwórz aplikację
+  Arkusze Google na telefonie i edytuj komórkę. Zmiana pojawi się na stronie
+  po ok. 2-5 minutach (tyle potrzebuje Google na odświeżenie pliku CSV).
+- Tryb podglądu wszystkich 24 dni przed grudniem: dopisz na końcu adresu
+  swojej strony ?preview=mikolaj (hasło zmienisz w app.js w polu previewKey).

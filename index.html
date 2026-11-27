@@ -22,10 +22,12 @@
       <div class="hero-ornament" aria-hidden="true">✦ ❄ ✦</div>
       <h1 id="calendar-title">Kalendarz Adwentowy</h1>
       <p id="calendar-subtitle" class="subtitle"></p>
-      <div id="status-pill" class="status-pill"></div>
+      <div id="status-pill" class="status-pill">Ładowanie okienek...</div>
     </header>
 
-    <section id="calendar-grid" class="calendar-grid" aria-label="Okienka kalendarza adwentowego"></section>
+    <section id="calendar-grid" class="calendar-grid" aria-label="Okienka kalendarza adwentowego">
+      <p class="loading-message">Pobieranie kalendarza...</p>
+    </section>
 
     <footer class="footer">
       <p>Stworzone specjalnie dla Ciebie ✨</p>
@@ -62,25 +64,5 @@
   <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
   <script src="app.js"></script>
-  <script>
-    // Dynamiczne ładowanie dane.js z parametrem czasu, żeby przeglądarka
-    // na telefonie nie trzymała starej wersji w pamięci podręcznej po edycji.
-    (function loadData() {
-      const script = document.createElement('script');
-      script.src = 'dane.js?v=' + Date.now();
-      script.onload = function () {
-        if (typeof window.initAdventCalendar === 'function') {
-          window.initAdventCalendar();
-        }
-      };
-      script.onerror = function () {
-        const grid = document.getElementById('calendar-grid');
-        if (grid) {
-          grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color:#fca5a5;">Nie udało się wczytać pliku <strong>dane.js</strong>. Sprawdź, czy nie ma w nim błędu składni.</p>';
-        }
-      };
-      document.body.appendChild(script);
-    })();
-  </script>
 </body>
 </html>
