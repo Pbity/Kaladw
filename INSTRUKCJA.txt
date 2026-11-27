@@ -1,0 +1,32 @@
+INSTRUKCJA URUCHOMIENIA I EDYCJI KALENDARZA ADWENTOWEGO
+=======================================================
+
+1. TESTOWANIE NA KOMPUTERZE
+   - Rozpakuj archiwum ZIP.
+   - Kliknij dwukrotnie plik index.html — otworzy się w przeglądarce.
+   - Aby podejrzeć wszystkie 24 dni przed grudniem, dopisz w pasku adresu
+     przeglądarki na samym końcu: ?preview=mikolaj
+     (np. .../index.html?preview=mikolaj).
+
+2. DODAWANIE TREŚCI I ZDJĘĆ
+   - Otwórz plik dane.js w dowolnym edytorze (Notatnik, VS Code).
+   - Uzupełnij tytuły, teksty oraz opcjonalne kupony (coupon) lub linki
+     do osadzenia ze Spotify/YouTube (mediaEmbed).
+   - Zdjęcia wrzuć do folderu "zdjecia/" (najlepiej zmniejszone do ok. 1200 px
+     szerokości w formacie .jpg lub .webp, żeby szybko ładowały się na telefonie)
+     i wpisz ścieżkę w dane.js, np.: image: "zdjecia/01.jpg".
+
+3. WRZUCENIE NA GITHUB PAGES (DARMOWY HOSTING)
+   - Załóż nowe publiczne repozytorium na GitHubie (np. "kalendarz").
+   - Wgraj do niego wszystkie rozpakowane pliki wraz z folderem "zdjecia".
+   - Wejdź w: Settings -> Pages -> sekcja "Build and deployment".
+   - W "Branch" wybierz "main" i folder "/ (root)", kliknij Save.
+   - Po 1-2 minutach u góry pojawi się gotowy link do strony.
+
+4. EDYCJA NA ŻYWO (GDY COŚ PÓJDZIE NIE TAK)
+   - Wejdź w plik dane.js bezpośrednio na GitHubie (komputer lub aplikacja
+     GitHub Mobile), kliknij ikonę ołówka (Edit), popraw tekst i kliknij
+     "Commit changes".
+   - Po 1-2 minutach strona zaktualizuje się automatycznie. Dzięki mechanizmowi
+     odświeżania w index.html przeglądarka pobierze najnowszą wersję dane.js
+     bez konieczności czyszczenia pamięci podręcznej.

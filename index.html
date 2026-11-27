@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Kalendarz Adwentowy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="snow-canvas" aria-hidden="true"></canvas>
+
+  <div id="preview-banner" class="preview-banner hidden">
+    Tryb podglądu aktywny — wszystkie okienka są odblokowane.
+  </div>
+
+  <main class="container">
+    <header class="hero">
+      <div class="hero-ornament" aria-hidden="true">✦ ❄ ✦</div>
+      <h1 id="calendar-title">Kalendarz Adwentowy</h1>
+      <p id="calendar-subtitle" class="subtitle"></p>
+      <div id="status-pill" class="status-pill"></div>
+    </header>
+
+    <section id="calendar-grid" class="calendar-grid" aria-label="Okienka kalendarza adwentowego"></section>
+
+    <footer class="footer">
+      <p>Stworzone specjalnie dla Ciebie ✨</p>
+    </footer>
+  </main>
+
+  <!-- Okno (modal) z zawartością dnia -->
+  <div id="day-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <button id="modal-close" class="modal-close" aria-label="Zamknij okno">&times;</button>
+      <div class="modal-header">
+        <span id="modal-day-badge" class="modal-day-badge">1 grudnia</span>
+        <h2 id="modal-title">Tytuł dnia</h2>
+      </div>
+
+      <div class="modal-body">
+        <figure id="modal-image-wrap" class="modal-image-wrap hidden">
+          <img id="modal-image" src="" alt="" loading="lazy" />
+        </figure>
+
+        <div id="modal-text" class="modal-text"></div>
+
+        <div id="modal-coupon" class="coupon-card hidden">
+          <div class="coupon-label">✦ KUPON DO WYKORZYSTANIA ✦</div>
+          <div id="modal-coupon-text" class="coupon-text"></div>
+        </div>
+
+        <div id="modal-media" class="modal-media hidden"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Powiadomienie dla zablokowanych dni -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+  <script>
+    // Dynamiczne ładowanie dane.js z parametrem czasu, żeby przeglądarka
+    // na telefonie nie trzymała starej wersji w pamięci podręcznej po edycji.
+    (function loadData() {
+      const script = document.createElement('script');
+      script.src = 'dane.js?v=' + Date.now();
+      script.onload = function () {
+        if (typeof window.initAdventCalendar === 'function') {
+          window.initAdventCalendar();
+        }
+      };
+      script.onerror = function () {
+        const grid = document.getElementById('calendar-grid');
+        if (grid) {
+          grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color:#fca5a5;">Nie udało się wczytać pliku <strong>dane.js</strong>. Sprawdź, czy nie ma w nim błędu składni.</p>';
+        }
+      };
+      document.body.appendChild(script);
+    })();
+  </script>
+</body>
+</html>
