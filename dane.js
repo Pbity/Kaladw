@@ -29,9 +29,8 @@ window.CALENDAR_CONFIG = {
 window.CALENDAR_DAYS = [
   {
     day: 1,
-    title: "Zaczynamy grudzień!",
-    text: `Pierwsze okienko otwarte.
-Od dziś aż do Wigilii codziennie czeka tu na Ciebie mała niespodzianka, wspomnienie albo drobny prezent.
+    title: "Zaczynamy zgrubnej rury!",
+    text: `Najlepsze na start idziemy do roska.
 
 Rozgość się i zaglądaj tu codziennie rano!`,
     image: "zdjecia/przyklad.svg",
