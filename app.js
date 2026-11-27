@@ -3,7 +3,7 @@
    ============================================================ */
 const CALENDAR_CONFIG = {
   // Wklej tutaj link CSV z Google Sheets (Plik -> Udostępnij -> Opublikuj w internecie -> CSV):
-  sheetCsvUrl: "WKLEJ_TUTAJ_LINK_CSV_Z_GOOGLE_SHEETS",
+  sheetCsvUrl: "https://docs.google.com/spreadsheets/d/172x4YoBqJXhfAc_Im0Mq1z5MyquVJYnzZP0ak4zKfFE/edit?usp=drivesdk",
 
   year: 2026,
   month: 12, // 12 = grudzień
