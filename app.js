@@ -2,8 +2,8 @@
    USTAWIENIA KALENDARZA — JEDYNE MIEJSCE, KTÓRE EDYTUJESZ W KODZIE
    ============================================================ */
 const CALENDAR_CONFIG = {
-  // Wklej tutaj link CSV z Google Sheets (Plik -> Udostępnij -> Opublikuj w internecie -> CSV):
-  sheetCsvUrl: "https://docs.google.com/spreadsheets/d/172x4YoBqJXhfAc_Im0Mq1z5MyquVJYnzZP0ak4zKfFE/edit?usp=drivesdk",
+  // Gotowy link CSV do Twojego arkusza Google Sheets (działa po ustawieniu "Przeglądający"):
+  sheetCsvUrl: "https://docs.google.com/spreadsheets/d/172x4YoBqJXhfAc_Im0Mq1z5MyquVJYnzZP0ak4zKfFE/gviz/tq?tqx=out:csv",
 
   year: 2026,
   month: 12, // 12 = grudzień
@@ -38,7 +38,7 @@ const CALENDAR_CONFIG = {
 
   // Bezpieczny parser CSV (obsługuje przecinki, cudzysłowy i entery w komórkach)
   function parseCSV(csvText) {
-    const text = csvText.replace(/^﻿/, ""); // usuwa BOM
+    const text = csvText.replace(/^\uFEFF/, ""); // usuwa BOM
     const rows = [];
     let row = [];
     let field = "";
@@ -63,15 +63,13 @@ const CALENDAR_CONFIG = {
         } else if (char === ",") {
           row.push(field);
           field = "";
-        } else if (char === "" && next === "
-") {
+        } else if (char === "\r" && next === "\n") {
           row.push(field);
           rows.push(row);
           row = [];
           field = "";
           i++;
-        } else if (char === "
-" || char === "") {
+        } else if (char === "\n" || char === "\r") {
           row.push(field);
           rows.push(row);
           row = [];
@@ -414,7 +412,7 @@ const CALENDAR_CONFIG = {
       console.error("Błąd ładowania arkusza:", err);
       statusPill.textContent = "Błąd ładowania";
       grid.innerHTML =
-        '<div class="error-message">Nie udało się pobrać danych z Google Sheets. Upewnij się, że arkusz jest opublikowany jako <strong>CSV</strong> i link w <code>app.js</code> jest poprawny.</div>';
+        '<div class="error-message">Nie udało się pobrać danych z Google Sheets. Upewnij się, że arkusz jest udostępniony do odczytu i link w <code>app.js</code> jest poprawny.</div>';
     }
   }
 
